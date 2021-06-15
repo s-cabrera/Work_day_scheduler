@@ -61,6 +61,7 @@ textarea {
   border-left: 1px solid black;
   border-top-right-radius: 15px;
   border-bottom-right-radius: 15px;
+  padding-left: 5px;
   background-color: #06aed5;
   color: white;
 }
@@ -68,4 +69,22 @@ textarea {
 .saveBtn i:hover {
   font-size: 20px;
   transition: all 0.3s ease-in-out;
+}
+
+ul{
+  flex-wrap: wrap;
+}
+
+li{
+  padding-right: 0px;
+}
+
+li h4{
+  flex: 0 0 8%;
+}
+
+.events{
+  margin-left: 5px;
+  margin-right: 5px;
+  flex: 0 0 85%;
 }
