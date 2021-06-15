@@ -14,7 +14,7 @@ WHEN I refresh the page
 THEN the saved events persist
 */
 
-
+//localStorage.clear();
 // ----------- Variables -----------------//
 var timeblockEl = $('#container');
 
@@ -23,12 +23,22 @@ var headers = ["6 AM", "7 AM", "8 AM", "9 AM", "10 AM", "11 AM",
     "6 PM", "7 PM", "8 PM", "9 PM", "10 PM", "11 PM"
 ];
 
-var text = ["", "", "", "", "", "",
-"", "", "", "", "", "",
-"", "", "", "", "", ""
-];
+var text;
 
+refresh();
 renderTimeblock();
+
+function refresh(){
+    console.log(localStorage);
+    text = ["", "", "", "", "" , "", 
+        "", "", "", "", "" , "", 
+        "", "", "", "", "" , ""] ;
+    var loadedtext = JSON.parse(localStorage.getItem('text'));
+    if (loadedtext != null){
+        text = loadedtext;
+    }
+    console.log(`log: ${text}`);
+}
 
 //Display and update the current date and time
 var updateTime = function() {
@@ -36,17 +46,8 @@ var updateTime = function() {
 }
 setInterval(updateTime, 1000);
 
-/*
-      <li class="list-group-item d-inline-flex">
-        <h4>8 AM</h4>
-        <p>Cras justo odio</p>
-        <input class="btn btn-info" type="submit" value="Save">
-      </li>
-*/
-
 function renderTimeblock(){
-    //console.log("Rendered Timeblock \r\n Times: ");
-    headers.forEach(element => {
+    headers.forEach((element, index) => {
         //Make new elements for the page 
         var li = $('<li>');
         var h4 = $('<h4>');
@@ -54,13 +55,20 @@ function renderTimeblock(){
         var submit = $('<input type="submit" value="Save">');
 
         //Style them
-        li.attr('class', `list-group-item d-inline-flex ${colorCoded(element)}`);
+        li.attr('class', `list-group-item d-inline-flex`);
         event.attr('class', `events ${colorCoded(element)}`);
         submit.attr('class', 'btn btn-info saveBtn');
 
+        if(event.hasClass('past')){
+            console.log("disable me");
+            //event.addClass('disabled');
+            event.attr("disabled", 'disabled');
+            //submit.addClass('disabled');
+            submit.attr("disabled", 'disabled');
+        }
         //Add text to the headers
         h4.text(element);
-        //event.placeholder = element;
+        event.attr('value', text[index]);
 
 
         li.append(h4);
@@ -78,6 +86,9 @@ buttons.click(function(){
     text[$(this).parent().index()] = $(this).prev().val();
     console.log(`In text array: ${text[$(this).parent().index()]}`);
 
+    //localStorage.clear();
+    localStorage.setItem('text', JSON.stringify(text));
+    console.log(localStorage);
 });
 
 function colorCoded(timeblockTime){
@@ -86,18 +97,6 @@ function colorCoded(timeblockTime){
     var currentAMPM = moment().format("A");
     var inputNum = parseInt(timeblockTime);
     var inputAMPM = timeblockTime.slice(-2);
-    // var inputNumPlusOne = inputNum + 1;
-    // if(inputNumPlusOne > 12){
-    //     inputNumPlusOne = 1;
-    //     if(inputAMPM == "AM"){inputAMPM = "PM";}
-    //     else if(inputAMPM == "PM"){inputAMPM = "AM";}
-    // }
-
-    // console.log(`Current time: ${current} ${currentAMPM}`);
-    // console.log(`Timeblock Time: ${timeblockTime}`);
-    // console.log(`Input: ${inputNum} ${inputAMPM}`);
-
-    //12PM is the exception to rules
 
     if((inputNum == current) && (inputAMPM == currentAMPM)){
         //Present
@@ -109,6 +108,7 @@ function colorCoded(timeblockTime){
     }
     else if((inputNum > current) && (inputAMPM == currentAMPM)){
         if((inputNum == 12) && (currentAMPM == "PM")){
+                //12PM is the exception to rules
             return "past";
         }
         //Future
