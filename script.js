@@ -20,7 +20,7 @@ var timeblockEl = $('#container');
 
 var headers = ["6 AM", "7 AM", "8 AM", "9 AM", "10 AM", "11 AM",
     "12 PM", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM",
-    "6 PM", "7 PM", "8 PM", "9 PM", "10 PM", "11 PM"
+    "6 PM", "7 PM", "8 PM", "9 PM", "10 PM"
 ];
 
 var text;
@@ -30,9 +30,7 @@ renderTimeblock();
 
 function refresh(){
     console.log(localStorage);
-    text = ["", "", "", "", "" , "", 
-        "", "", "", "", "" , "", 
-        "", "", "", "", "" , ""] ;
+    text = Array(headers.length);
     var loadedtext = JSON.parse(localStorage.getItem('text'));
     if (loadedtext != null){
         text = loadedtext;
@@ -60,7 +58,6 @@ function renderTimeblock(){
         submit.attr('class', 'btn btn-info saveBtn');
 
         if(event.hasClass('past')){
-            console.log("disable me");
             //event.addClass('disabled');
             event.attr("disabled", 'disabled');
             //submit.addClass('disabled');
@@ -102,8 +99,13 @@ function colorCoded(timeblockTime){
         //Present
         return 'present';
     }
-    else if(((inputNum < current) && (inputAMPM == currentAMPM )) || (inputAMPM == "AM" && currentAMPM == "PM")){
+    else if(((inputNum < current) && (inputAMPM == currentAMPM )) || (inputAMPM == "AM" && currentAMPM == "PM") || (current == 12 && inputAMPM == "PM")){
         //Past
+
+        if((current == 12) && (inputAMPM == "PM")){
+            //Check for 12PM the time that breaks the normal rules
+            return "future";
+        }
         return 'past';
     }
     else if((inputNum > current) && (inputAMPM == currentAMPM)){
